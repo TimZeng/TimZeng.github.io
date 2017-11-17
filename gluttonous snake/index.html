@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>mini game</title>
+  <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    canvas {
+      display: block;
+      margin: 100px auto 0;
+      border: 1px solid #d3d3d3;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="500" height="500">
+    Your browser does not support canvas tag. Please use other browsers.
+  </canvas>
+  <script type="text/javascript">
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    var r = [{x: 10, y:9}, {x:10, y:8}, {x:10, y:7}, {x:10, y:6}];
+    var direction = 40;
+    var food = null;
+    var stop = false;
+
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = 'black';
+
+    const onFrame = () => {
+      if ( stop || r[0].x < 0 || r[0].x >= 50 || r[0].y < 0 || r[0].y >= 50 ) {
+        return;
+      }
+      // check if there is food, and does the snack catch it
+      if ( !!food ) {
+        if ( (direction === 40 && r[0].x === food.x && r[0].y + 1 === food.y)
+        || (direction === 38 && r[0].x === food.x && r[0].y - 1 === food.y)
+        || (direction === 37 && r[0].x - 1 === food.x && r[0].y === food.y)
+        || (direction === 39 && r[0].x + 1 === food.x && r[0].y === food.y) ) {
+          r.unshift(food);
+          food = null;
+        }
+      }
+
+      // move last element to front
+      r.unshift(r.pop());
+
+      // move snack
+      switch ( direction ) {
+
+        case 37:
+          r[0].x = r[1].x - 1;
+          r[0].y = r[1].y;
+          break;
+
+        case 38:
+          r[0].x = r[1].x;
+          r[0].y = r[1].y - 1;
+          break;
+
+        case 39:
+          r[0].x = r[1].x + 1;
+          r[0].y = r[1].y;
+          break;
+
+        case 40:
+          r[0].x = r[1].x;
+          r[0].y = r[1].y + 1;
+          break;
+
+      }
+
+      // draw snack
+      ctx.clearRect(0,0,500,500);
+      for ( let i = 0; i < r.length; i++ ) {
+        ctx.fillRect(r[i].x * 10, r[i].y * 10, 10, 10);
+      }
+
+      // if no food, then add one food
+      if ( food === null ) {
+        food = { x: (Math.random() * 50 >>> 0), y: (Math.random() * 50 >>> 0) };
+      }
+
+      // draw food
+      if ( food ) {
+        ctx.fillRect(food.x * 10, food.y * 10, 10, 10);
+      }
+
+      // check if hit the border
+      if ( r[0].x < 0 || r[0].x >= 50 || r[0].y < 0 || r[0].y >= 50 ) {
+        alert(`Game Over\n真是完蛋，得了${r.length - 4}分`);
+        window.clearInterval(interval);
+      }
+    }
+
+    const interval = setInterval(onFrame, 100);
+
+    // add keyboard event listener
+    document.onkeyup = function(e) {
+      if ( e.keyCode >= 37 && e.keyCode <= 40 && e.keyCode !== direction && Math.abs(e.keyCode - direction) !== 2 ) {
+        direction = e.keyCode;
+      } else if ( e.keyCode === 32 ) {
+        stop = !stop;
+      }
+
+    }
+
+  </script>
+</body>
+</html>
