@@ -1,2 +1,2 @@
-# pure-javascript
-Projects build with pure JavaScript, HTML, and CSS
+# Gluttonous Snake
+Mini Game build with pure JavaScript, HTML, and CSS
